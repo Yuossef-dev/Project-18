@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Send a room booking request to Velora Hotel.">
+  <title>Velora Hotel | Booking Request</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Log_in.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <a class="logo" href="index.html">Velora <span>Hotel</span></a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a><a href="index.html#rooms">Rooms</a><a href="index.html#services">Services</a><a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="booking-layout">
+    <section class="booking-intro">
+      <p class="eyebrow">YOUR STAY STARTS HERE</p>
+      <h1>Let's plan<br><span>your stay.</span></h1>
+      <p>Tell us a little about your visit and preferred room. This demo form checks your entries in the browser; it does not send a real reservation.</p>
+      <a href="index.html#rooms" class="back-link">← Explore our rooms</a>
+    </section>
+    <form class="booking-form" id="booking-form">
+      <div class="form-heading"><div><p class="eyebrow">VELORA HOTEL</p><h2>Booking request</h2></div><span class="form-mark">VH</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label for="name">Full name</label><input type="text" id="name" name="name" autocomplete="name" required placeholder="Your full name"></div>
+        <div class="form-group"><label for="email">Email address</label><input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="form-group"><label for="password">Create a demo password</label><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"><small>Demo only — don't use a real password.</small></div>
+        <div class="form-group"><label for="room-select">Preferred room</label><select id="room-select" name="room" required><option value="" disabled selected>Select a room</option><option value="classic">Classic Luxury Room</option><option value="modern">Modern City View Room</option><option value="executive">Executive Room</option><option value="sea-view">Luxury Sea View Suite</option><option value="royal">Royal Suite</option><option value="garden">Garden View Room</option></select></div>
+        <div class="form-group"><label for="check-in">Check-in</label><input type="date" id="check-in" name="checkin" required></div>
+        <div class="form-group"><label for="check-out">Check-out</label><input type="date" id="check-out" name="checkout" required></div>
+        <div class="form-group full-width"><label for="message">Special requests <span>(optional)</span></label><textarea id="message" name="message" rows="3" placeholder="Let us know if you have any requests"></textarea></div>
+      </div>
+      <div class="form-buttons"><button type="submit" class="button button-primary">Send request</button><button type="reset" class="button button-secondary">Clear form</button></div>
+      <p class="form-notice" id="form-notice" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <footer class="site-footer"><a class="logo" href="index.html">Velora 
+    <span>Hotel</span></a><span>© 2026 Velora Hotel — Student project</span>
+  </footer>
+  
+  <script>
+    const form = document.getElementById('booking-form');
+    const roomSelect = document.getElementById('room-select');
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('room')) roomSelect.value = params.get('room');
+    const checkIn = document.getElementById('check-in');
+    const checkOut = document.getElementById('check-out');
+    const today = new Date();
+    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    checkIn.min = localDate;
+    checkOut.min = localDate;
+    checkIn.addEventListener('change', () => {
+      checkOut.min = checkIn.value || localDate;
+      if (checkOut.value && checkOut.value <= checkIn.value) checkOut.value = '';
+    });
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const notice = document.getElementById('form-notice');
+      if (checkOut.value <= checkIn.value) {
+        notice.textContent = 'Please choose a check-out date after your check-in date.';
+        notice.className = 'form-notice error';
+        checkOut.focus();
+        return;
+      }
+      notice.textContent = 'Your demo request looks complete! No reservation was sent. Connect a backend to accept real bookings.';
+      notice.className = 'form-notice success';
+    });
+    form.addEventListener('reset', () => {
+      document.getElementById('form-notice').textContent = '';
+      setTimeout(() => { checkOut.min = checkIn.value || localDate; }, 0);
+    });
+  </script>
+
+</body>
+</html>
